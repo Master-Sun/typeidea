@@ -28,6 +28,24 @@ class TagAdmin(admin.ModelAdmin):
         return super(TagAdmin, self).save_model(request, obj, form, change)
 
 
+# 自定义过滤器
+class CategoryOwnerFilter(admin.SimpleListFilter):
+    """自定义过滤器：只显示当前用户的分类(category)"""
+    title = '分类过滤器'    # 过滤器名称，页面显示：以 分类过滤器
+    parameter_name = 'owner_category'    # 过滤查询时URL的参数名
+
+    # 返回要展示的内容(分类名)和查询用的id，此方法关乎过滤器的显示
+    def lookups(self, request, model_admin):
+        return Category.objects.filter(owner=request.user).values_list('id', 'name')
+
+    # 根据选择的过滤参数过滤列表页的显示结果，此方法关乎列表页的显示
+    def queryset(self, request, queryset):
+        category_id = self.value()    # 获取过滤参数，category的id
+        if category_id:
+            return queryset.filter(category_id=category_id)
+        return queryset
+
+
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     # operator 为自定义的显示字段
@@ -35,7 +53,7 @@ class PostAdmin(admin.ModelAdmin):
     # 定义可点击进入编辑页面的字段，不写的话默认为第一个
     list_display_links = []
     # 定义右侧过滤器的参考字段
-    list_filter = ['category']
+    list_filter = [CategoryOwnerFilter]
     # 定义搜索字段，此处category为外键，双下划线指定关联Category类中的name字段
     search_fields = ['title', 'category__name']
 
@@ -46,6 +64,9 @@ class PostAdmin(admin.ModelAdmin):
     # 开启顶部的编辑按钮
     save_on_top = True
 
+    # 指定不显示的字段，字段名不能同时出现在exclude和fields中
+    # 感觉只写fields不就行了
+    # exclude = ('owner', 'created_time')
     # 编辑页显示的字段，与fieldsets不可共存
     fields = (
         ('category', 'title'),
@@ -66,3 +87,9 @@ class PostAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.owner = request.user
         return super(PostAdmin, self).save_model(request, obj, form, change)
+
+    # 自定义列表页中只显示当前登陆用户自己的博客
+    def get_queryset(self, request):
+        # 先调用父类中的方法得到查询结果集，然后再进行过滤
+        qs = super(PostAdmin, self).get_queryset(request)
+        return qs.filter(owner=request.user)
