@@ -1,5 +1,7 @@
+from blogidea.custom_site import custom_site
 from django.contrib import admin
 from blog.models import *
+from blog.adminforms import PostAdminForm
 
 
 # Register your models here.
@@ -7,7 +9,15 @@ from django.urls import reverse
 from django.utils.html import format_html
 
 
-@admin.register(Category)
+# p123:同一页面编辑关联数据
+class PostInline(admin.TabularInline):
+    fields = ('title', 'desc')
+    extra = 1
+    model = Post
+
+
+# 注册后台管理，指定要注册的实体类和对应的站点,后台管理的内容会通过url后指定的站点进行区分
+@admin.register(Category, site=custom_site)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'status', 'is_nav', 'owner', 'created_time')
     fields = ('name', 'status', 'is_nav')
@@ -16,8 +26,10 @@ class CategoryAdmin(admin.ModelAdmin):
         obj.owner = request.user
         return super(CategoryAdmin, self).save_model(request, obj, form, change)
 
+    # inlines = [PostInline, ]
 
-@admin.register(Tag)
+
+@admin.register(Tag, site=custom_site)
 class TagAdmin(admin.ModelAdmin):
     list_display = ('name', 'status', 'owner', 'created_time')
     fields = ('name', 'status')
@@ -46,8 +58,10 @@ class CategoryOwnerFilter(admin.SimpleListFilter):
         return queryset
 
 
-@admin.register(Post)
+@admin.register(Post, site=custom_site)
 class PostAdmin(admin.ModelAdmin):
+    # 修改编辑页面中form表单元素的样式
+    form = PostAdminForm
     # operator 为自定义的显示字段
     list_display = ('title', 'status', 'category', 'owner', 'created_time', 'operator')
     # 定义可点击进入编辑页面的字段，不写的话默认为第一个
@@ -68,18 +82,38 @@ class PostAdmin(admin.ModelAdmin):
     # 感觉只写fields不就行了
     # exclude = ('owner', 'created_time')
     # 编辑页显示的字段，与fieldsets不可共存
-    fields = (
-        ('category', 'title'),
-        'desc',
-        'status',
-        'content',
-        'tag',
+    # fields = (
+    #     ('category', 'title'),
+    #     'desc',
+    #     'status',
+    #     'content',
+    #     'tag',
+    # )
+    fieldsets = (
+        ('基础配置', {
+            'description': '基础配置',    # 标题下的描述
+            'fields': (
+                ('title', 'category'),
+                'status',
+            )
+        }),
+        ('内容', {
+            'fields': (
+                'desc',
+                'content',
+            )
+        }),
+        ('额外信息', {
+            'classes': ('collapse',),    # 控制显示和隐藏
+            'fields': ('tag',)
+        })
     )
-
-    # 定义 自定义显示字段的方法,返回值显示在列表页中>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    # 设置字段横向或纵向展示
+    filter_horizontal = ('tag',)
+    # 定义 自定义显示字段的方法,返回值显示在列表页中
     def operator(self, obj):
         return format_html(
-            '<a href="{}">编辑</a>', reverse('admin:blog_post_change', args=(obj.id,))
+            '<a href="{}">编辑</a>', reverse('cus_admin:blog_post_change', args=(obj.id,))
         )
     # 显示自定义显示字段的名称
     operator.short_description = '操作'
@@ -93,3 +127,10 @@ class PostAdmin(admin.ModelAdmin):
         # 先调用父类中的方法得到查询结果集，然后再进行过滤
         qs = super(PostAdmin, self).get_queryset(request)
         return qs.filter(owner=request.user)
+
+    # 向页面中添加css和js
+    # class Media:
+    #     css = {
+    #         'all': ('http://cdn.bootcss.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css',),
+    #     }
+        # js = ('https://cdn.jsdelivr.net/gh/bootcdn/BootCDN/ajax/libs/bootstrap/4.0.0-beta.2/js/bootstrap.bundle.js',)

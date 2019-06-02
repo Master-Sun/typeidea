@@ -13,9 +13,11 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
+from blogidea.custom_site import custom_site
 from django.conf.urls import url
 from django.contrib import admin
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    url(r'^super_admin/', admin.site.urls),    # 管理用户，使用jango自带的site
+    url(r'^admin/', custom_site.urls),         # 管理业务，使用自定义的站点
 ]
