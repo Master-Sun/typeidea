@@ -1,12 +1,12 @@
 from blogidea.custom_site import custom_site
-from django.contrib import admin
-from blog.models import *
 from blog.adminforms import PostAdminForm
-
+from blogidea.base_admin import BaseOwnerAdmin
 
 # Register your models here.
 from django.urls import reverse
 from django.utils.html import format_html
+from blog.models import *
+from django.contrib import admin
 
 
 # p123:同一页面编辑关联数据
@@ -18,26 +18,24 @@ class PostInline(admin.TabularInline):
 
 # 注册后台管理，指定要注册的实体类和对应的站点,后台管理的内容会通过url后指定的站点进行区分
 @admin.register(Category, site=custom_site)
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'status', 'is_nav', 'owner', 'created_time')
+class CategoryAdmin(BaseOwnerAdmin):
+    list_display = ('name', 'status', 'is_nav', 'owner', 'created_time', 'post_count')
     fields = ('name', 'status', 'is_nav')
 
-    def save_model(self, request, obj, form, change):
-        obj.owner = request.user
-        return super(CategoryAdmin, self).save_model(request, obj, form, change)
+    # 自定义列表页显示字段：该分类下的博客数量
+    def post_count(self, obj):
+        # 一对多关系时，主表查询关联子表的数据,查询语法：主表对象.从表小写_set.过滤器方法
+        return obj.post_set.count()
+
+    post_count.short_description = '文章数量'
 
     # inlines = [PostInline, ]
 
 
 @admin.register(Tag, site=custom_site)
-class TagAdmin(admin.ModelAdmin):
+class TagAdmin(BaseOwnerAdmin):
     list_display = ('name', 'status', 'owner', 'created_time')
     fields = ('name', 'status')
-
-    # 该方法是将编辑页中得数据保存到数据库中，此处添加owner字段的数据
-    def save_model(self, request, obj, form, change):
-        obj.owner = request.user
-        return super(TagAdmin, self).save_model(request, obj, form, change)
 
 
 # 自定义过滤器
@@ -59,7 +57,7 @@ class CategoryOwnerFilter(admin.SimpleListFilter):
 
 
 @admin.register(Post, site=custom_site)
-class PostAdmin(admin.ModelAdmin):
+class PostAdmin(BaseOwnerAdmin):
     # 修改编辑页面中form表单元素的样式
     form = PostAdminForm
     # operator 为自定义的显示字段
@@ -110,6 +108,7 @@ class PostAdmin(admin.ModelAdmin):
     )
     # 设置字段横向或纵向展示
     filter_horizontal = ('tag',)
+
     # 定义 自定义显示字段的方法,返回值显示在列表页中
     def operator(self, obj):
         return format_html(
@@ -118,15 +117,16 @@ class PostAdmin(admin.ModelAdmin):
     # 显示自定义显示字段的名称
     operator.short_description = '操作'
 
-    def save_model(self, request, obj, form, change):
-        obj.owner = request.user
-        return super(PostAdmin, self).save_model(request, obj, form, change)
-
-    # 自定义列表页中只显示当前登陆用户自己的博客
-    def get_queryset(self, request):
-        # 先调用父类中的方法得到查询结果集，然后再进行过滤
-        qs = super(PostAdmin, self).get_queryset(request)
-        return qs.filter(owner=request.user)
+    # 自定义了继承自admin.ModelAdmin的基类，并重写了save_model和get_queryset方法，所以此处省略
+    # def save_model(self, request, obj, form, change):
+    #     obj.owner = request.user
+    #     return super(PostAdmin, self).save_model(request, obj, form, change)
+    #
+    # # 自定义列表页中只显示当前登陆用户自己的博客
+    # def get_queryset(self, request):
+    #     # 先调用父类中的方法得到查询结果集，然后再进行过滤
+    #     qs = super(PostAdmin, self).get_queryset(request)
+    #     return qs.filter(owner=request.user)
 
     # 向页面中添加css和js
     # class Media:
