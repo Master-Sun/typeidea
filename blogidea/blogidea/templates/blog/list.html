@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>列表页</title>
+</head>
+<body>
+<h1>列表页</h1>
+<hr>
+<ul>
+{% for post in post_list %}
+    <li>
+        <a href="/post/{{ post.id }}/">{{ post.title }}</a>
+        <div>
+            <span>作者：{{ post.owner.username }}</span>&nbsp;&nbsp;&nbsp;
+            <span>分类：{{ post.category.name }}</span>&nbsp;&nbsp;&nbsp;
+            </span>
+        </div>
+        <p>摘要：{{ post.desc }}</p>
+    </li>
+{% endfor %}
+</ul>
+</body>
+</html>

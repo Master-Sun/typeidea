@@ -69,3 +69,29 @@ class Post(models.Model):
         # 根据id进行降序排列
         ordering = ['-id']
 
+    @classmethod
+    def latest_posts(cls):
+        return cls.objects.filter(status=Post.STATUS_NORMAL)
+
+    @staticmethod
+    def get_by_tag(tag_id):
+        try:
+            tag = Tag.objects.get(id=tag_id)
+        except Tag.DoesNotExist:
+            tag = None
+            post_list = []
+        else:
+            post_list = tag.post_set.filter(status=Post.STATUS_NORMAL)
+        return post_list, tag
+
+    @staticmethod
+    def get_by_category(category_id):
+        try:
+            category = Category.objects.get(id=category_id)
+        except Category.DoesNotExist:
+            post_list = []
+            category = None
+        else:
+            post_list = category.post_set.filter(status=Post.STATUS_NORMAL)
+        return post_list, category
+

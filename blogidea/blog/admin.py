@@ -3,10 +3,17 @@ from blog.adminforms import PostAdminForm
 from blogidea.base_admin import BaseOwnerAdmin
 
 # Register your models here.
+from django.contrib.admin.models import LogEntry
 from django.urls import reverse
 from django.utils.html import format_html
 from blog.models import *
 from django.contrib import admin
+
+
+# 后台站点注册日志查询
+@admin.register(LogEntry, site=custom_site)
+class LogEntryAdmin(admin.ModelAdmin):
+    list_display = ('action_time', 'user', 'content_type', 'object_repr', 'change_message', 'object_id')
 
 
 # p123:同一页面编辑关联数据
