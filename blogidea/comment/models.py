@@ -1,3 +1,4 @@
+from blog.models import Post
 from django.db import models
 
 
@@ -9,7 +10,7 @@ class Comment(models.Model):
         (STATUS_NORMAL, '正常'),
         (STATUS_DELETE, '删除'),
     )
-    target = models.CharField(max_length=100, verbose_name="评论目标")
+    target = models.ForeignKey(Post, verbose_name="评论目标")
     content = models.CharField(max_length=2000, verbose_name="内容")
     nickname = models.CharField(max_length=50, verbose_name="昵称")
     website = models.URLField(verbose_name="网站")

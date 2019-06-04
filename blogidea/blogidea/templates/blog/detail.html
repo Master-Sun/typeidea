@@ -10,15 +10,24 @@
 {% if post %}
     <h1>{{ post.title }}</h1>
     <div>
-        <span>作者：{{ post.owner.username }}</span>&nbsp;&nbsp;&nbsp;
-        <span>分类：{{ post.category.name }}</span>
-        <span>标签：
+        <p>作者：{{ post.owner.username }}</p>
+        <p>分类：{{ post.category.name }}</p>
+        <p>标签：
             {% for tag in tag_list %}
                 {{ tag.name }}
             {% endfor %}
-        </span>
+        </p>
     </div>
     <p>{{ post.content }}</p>
 {% endif %}
+
+<hr>
+<div>
+    侧边栏展示：
+    {% for sidebar in sidebars %}
+        <h4>{{ sidebar.title }}</h4>
+            {{ sidebar.content }}
+    {% endfor %}
+</div>
 </body>
 </html>

@@ -7,6 +7,21 @@
 <body>
 <h1>列表页</h1>
 <hr>
+<div>
+    顶部导航：
+    {% for cate in nav_categories %}
+        <a href="/category/{{ cate.id }}">{{ cate.name }}</a>
+    {% endfor %}
+</div>
+
+
+{% if tag %}
+    标签页：{{ tag.name }}
+{% endif %}
+{% if category %}
+    分类页：{{ category.name }}
+{% endif %}
+
 <ul>
 {% for post in post_list %}
     <li>
@@ -20,5 +35,20 @@
     </li>
 {% endfor %}
 </ul>
+
+<div>
+    底部导航：
+    {% for cate in normal_categories %}
+        <a href="/category/{{ cate.id }}">{{ cate.name }}</a>
+    {% endfor %}
+</div>
+<hr>
+<div>
+    侧边栏展示：
+    {% for sidebar in sidebars %}
+        <h4>{{ sidebar.title }}</h4>
+            {{ sidebar.content_html }}
+    {% endfor %}
+</div>
 </body>
 </html>

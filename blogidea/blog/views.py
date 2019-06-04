@@ -1,4 +1,5 @@
 from blog.models import *
+from config.models import SideBar
 from django.shortcuts import render
 
 
@@ -16,7 +17,10 @@ def post_list(request, category_id=None, tag_id=None):
         'post_list': post_list,
         'tag': tag,
         'category': category,
+        'sidebars': SideBar.get_all(),
     }
+    # 响应数据中加入分类信息
+    context.update(Category.get_navs())
     return render(request, 'blog/list.html', context=context)
 
 def post_detail(request, post_id):
@@ -26,11 +30,12 @@ def post_detail(request, post_id):
         post = None
         tag_list = []
     else:
-        print(post.tag, type(post.tag))
-        tag_list = []
-        # tag_list = post.tag_set.filter(status=Tag.STATUS_NORMAL)
+        # 多对多关系中查询出主表中所有的标签
+        tag_list = post.tag.all().filter(status=Tag.STATUS_NORMAL)
     context = {
         'post': post,
-        'tag_list': tag_list
+        'tag_list': tag_list,
+        'sidebars': SideBar.get_all(),
     }
+    context.update(Category.get_navs())
     return render(request, 'blog/detail.html', context=context)
