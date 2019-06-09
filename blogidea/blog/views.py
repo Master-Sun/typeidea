@@ -4,6 +4,9 @@ from django.shortcuts import render
 
 
 # Create your views here.
+from django.views.generic import DetailView
+
+
 def post_list(request, category_id=None, tag_id=None):
     tag = None
     category = None
@@ -39,3 +42,9 @@ def post_detail(request, post_id):
     }
     context.update(Category.get_navs())
     return render(request, 'blog/detail.html', context=context)
+
+
+# DetailView继承自View，实现get方法，可以绑定某一模板并获取单个实例数据
+class PostDetailView(DetailView):
+    model = Post
+    template_name = 'blog/detail.html'
