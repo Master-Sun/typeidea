@@ -59,6 +59,7 @@ class SideBar(models.Model):
     @property
     # 直接渲染成模板交给前端
     def content_html(self):
+
         from blog.models import Post    # 避免循环引用
         from comment.models import Comment
         result = ''

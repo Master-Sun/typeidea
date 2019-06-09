@@ -20,10 +20,10 @@ from blog.views import *
 
 
 urlpatterns = [
-    url(r'^$', post_list),
-    url(r'post/(?P<post_id>\d+)/$', post_detail),
-    url(r'category/(?P<category_id>\d+)/$', post_list),
-    url(r'tag/(?P<tag_id>\d+)/$', post_list),
-    url(r'^super_admin/', admin.site.urls),    # 管理用户，使用jango自带的site
-    url(r'^admin/', custom_site.urls),         # 管理业务，使用自定义的站点
+    url(r'^$', post_list, name='index'),
+    url(r'post/(?P<post_id>\d+)/$', post_detail, name='post-detail'),
+    url(r'category/(?P<category_id>\d+)/$', post_list, name='category-list'),
+    url(r'tag/(?P<tag_id>\d+)/$', post_list, name='tag-list'),
+    url(r'^super_admin/', admin.site.urls, name='super-admin'),    # 管理用户，使用jango自带的site
+    url(r'^admin/', custom_site.urls, name=admin),         # 管理业务，使用自定义的站点
 ]

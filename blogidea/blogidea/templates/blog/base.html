@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock%} - blogtype博客系统</title>
+</head>
+<body>
+<h1>列表页</h1>
+<hr>
+<div>
+    顶部导航：
+    {% for cate in nav_categories %}
+        <a href="{% url 'category-list' category_id=cate.id %}">{{ cate.name }}</a>
+    {% endfor %}
+</div>
+
+<hr>
+
+{% block main %}{% endblock %}
+
+<div>
+    底部导航：
+    {% for cate in normal_categories %}
+        <a href="{% url 'category-list' cate.id %}">{{ cate.name }}</a>
+    {% endfor %}
+</div>
+<hr>
+<div>
+    侧边栏展示：
+    {% for sidebar in sidebars %}
+        <h4>{{ sidebar.title }}</h4>
+            {{ sidebar.content_html }}
+    {% endfor %}
+</div>
+</body>
+</html>
