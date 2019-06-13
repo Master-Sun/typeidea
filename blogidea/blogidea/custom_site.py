@@ -5,9 +5,9 @@ from django.contrib.admin import AdminSite
 # 而用户管理的后台还是使用之前的site：admin.site.urls
 class CustomSite(AdminSite):
     # 页面的展示信息
-    site_header = 'Blogtype'
-    site_title = 'Blogtype管理后台'
-    index_title = '首页'
+    site_header = 'Blogtype'    # body中显示的标题
+    site_title = 'Blogtype管理后台'     # head中显示的标题
+    index_title = '首页'        # head中显示的标题
 
 
 # 创建自定义站点对象，name属性用于reverse反向解析url的地方

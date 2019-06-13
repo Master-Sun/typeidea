@@ -57,9 +57,8 @@ class SideBar(models.Model):
         return cls.objects.filter(status=SideBar.STATUS_SHOW)
 
     @property
-    # 直接渲染成模板交给前端
+    # 直接渲染成模板交给前端，property:将一个方法封装成属性，使用.语法调用，参数只有self
     def content_html(self):
-
         from blog.models import Post    # 避免循环引用
         from comment.models import Comment
         result = ''

@@ -25,5 +25,5 @@ urlpatterns = [
     url(r'category/(?P<category_id>\d+)/$', CategoryView.as_view(), name='category-list'),
     url(r'tag/(?P<tag_id>\d+)/$', TagView.as_view(), name='tag-list'),
     url(r'^super_admin/', admin.site.urls, name='super-admin'),    # 管理用户，使用jango自带的site
-    url(r'^admin/', custom_site.urls, name=admin),         # 管理业务，使用自定义的站点
+    url(r'^admin/', custom_site.urls, name='admin'),         # 管理业务，使用自定义的站点
 ]

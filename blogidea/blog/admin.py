@@ -26,14 +26,16 @@ class PostInline(admin.TabularInline):
 # 注册后台管理，指定要注册的实体类和对应的站点,后台管理的内容会通过url后指定的站点进行区分
 @admin.register(Category, site=custom_site)
 class CategoryAdmin(BaseOwnerAdmin):
+    # 设置列表页显示的字段，其中post_count为自定义字段
     list_display = ('name', 'status', 'is_nav', 'owner', 'created_time', 'post_count')
+    # 编辑页显示的字段
     fields = ('name', 'status', 'is_nav')
 
     # 自定义列表页显示字段：该分类下的博客数量
     def post_count(self, obj):
         # 一对多关系时，主表查询关联子表的数据,查询语法：主表对象.从表小写_set.过滤器方法
         return obj.post_set.count()
-
+    # 列表页自定义字段名
     post_count.short_description = '文章数量'
 
     # inlines = [PostInline, ]
@@ -47,11 +49,11 @@ class TagAdmin(BaseOwnerAdmin):
 
 # 自定义过滤器
 class CategoryOwnerFilter(admin.SimpleListFilter):
-    """自定义过滤器：只显示当前用户的分类(category)"""
+    """自定义过滤器：在文章列表页右侧的过滤器只显示当前用户的分类(category)"""
     title = '分类过滤器'    # 过滤器名称，页面显示：以 分类过滤器
     parameter_name = 'owner_category'    # 过滤查询时URL的参数名
 
-    # 返回要展示的内容(分类名)和查询用的id，此方法关乎过滤器的显示
+    # 返回过滤器要展示的内容(分类名)和查询用的id，此方法关乎过滤器的显示
     def lookups(self, request, model_admin):
         return Category.objects.filter(owner=request.user).values_list('id', 'name')
 
@@ -59,10 +61,12 @@ class CategoryOwnerFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         category_id = self.value()    # 获取过滤参数，category的id
         if category_id:
+            # 过滤参数为category_id，不能是点语法
             return queryset.filter(category_id=category_id)
         return queryset
 
 
+# 装饰器参数：注册的实体类以及所属的站点
 @admin.register(Post, site=custom_site)
 class PostAdmin(BaseOwnerAdmin):
     # 修改编辑页面中form表单元素的样式
@@ -135,7 +139,7 @@ class PostAdmin(BaseOwnerAdmin):
     #     qs = super(PostAdmin, self).get_queryset(request)
     #     return qs.filter(owner=request.user)
 
-    # 向页面中添加css和js
+    # 向页面中添加css和js，如果是项目本身的静态资源，直接写名称即可
     # class Media:
     #     css = {
     #         'all': ('http://cdn.bootcss.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css',),

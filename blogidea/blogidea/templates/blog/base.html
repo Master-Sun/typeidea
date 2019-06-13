@@ -10,6 +10,7 @@
 <div>
     顶部导航：
     {% for cate in nav_categories %}
+        <!-- url反向解析，支持位置传参和关键字传参 -->
         <a href="{% url 'category-list' category_id=cate.id %}">{{ cate.name }}</a>
     {% endfor %}
 </div>
@@ -29,6 +30,7 @@
     侧边栏展示：
     {% for sidebar in sidebars %}
         <h4>{{ sidebar.title }}</h4>
+            <!-- 调用model中定义的属性方法，直接返回对应的html片段 -->
             {{ sidebar.content_html }}
     {% endfor %}
 </div>
