@@ -1,0 +1,47 @@
+{% extends './base.html'%}
+<!-- extends时使用相对路径，因为此时tenplates文件夹下没有base.html -->
+
+{% block title %}
+{% if tag %}
+    标签页：{{ tag.name }}
+{% elif category %}
+    分类页：{{ category.name }}
+{% else %}
+    首页
+{% endif %}
+{% endblock %}
+
+{% block main %}
+<div class="container">
+<form action="/search/" method="get">
+    <input type="search" name="keyword" placeholder="来搜我啊" value="{{ keyword }}">
+    <button class="btn btn-default" type="submit">搜索</button>
+</form>
+</div>
+<ul>
+{% for post in post_list %}
+    <li>
+        <!-- 反向解析url地址， url 'name' arg1 arg2 -->
+        <!-- 后面跟的参数就是子组对应的内容，也可使用关键字传参 -->
+        <a href="{% url 'post-detail' post.id %}">{{ post.title }}</a>
+        <div>
+            <span>作者：<a href="{% url 'author' post.owner.id %}">{{ post.owner.username }}</a></span>&nbsp;&nbsp;&nbsp;
+            <span>分类：{{ post.category.name }}</span>&nbsp;&nbsp;&nbsp;
+        </div>
+        <p>摘要：{{ post.desc }}</p>
+    </li>
+{% endfor %}
+</ul>
+
+<!-- ListView提供的分页功能 -->
+{% if page_obj %}
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}">上一页</a>
+    {% endif %}
+    page {{ page_obj.number }} of {{ paginator.num_pages }}
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">下一页</a>
+    {% endif %}
+{% endif %}
+
+{% endblock %}

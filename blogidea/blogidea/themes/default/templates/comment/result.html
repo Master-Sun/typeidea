@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>评论结果页</title>
+</head>
+<body>
+<div class="result">
+    {% if succeed %}
+        评论成功！
+        <a href="{{ target }}"></a>
+    {% else %}
+        评论失败：
+        <ul class="errorlist">
+            <!-- 遍历form表单中的错误信息 -->
+            {% for field, message in form.errors.items %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        <!-- JS返回上个页面 -->
+        <a href="javascript:window.history.back();">返回</a>
+    {% endif %}
+</div>
+</body>
+</html>

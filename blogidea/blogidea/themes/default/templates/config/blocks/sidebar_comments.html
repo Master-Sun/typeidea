@@ -1,0 +1,11 @@
+<ul>
+    {% for comment in comments %}
+        <li><a href="{{ comment.target }}">查看文章</a>
+            {{ comment.nickname }} :
+            {% autoescape off %}
+            {{ comment.content }} :
+            {% endautoescape %}
+            {{ comment.created_time }}
+        </li>
+    {% endfor %}
+</ul>

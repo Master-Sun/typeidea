@@ -1,0 +1,38 @@
+{% extends 'blog/base.html '%}
+{% load comment_block %}   <!-- 导入自定义模板标签 -->
+
+{% block title%} {{ post.title }} {% endblock %}
+
+<!-- 导入markdown代码高亮所依赖的库 -->
+{% block extra_head %}
+    <link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.15.8/styles/googlecode.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.15.7/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+{% endblock %}
+
+{% block main %}
+{% if post %}
+    <h1>{{ post.title }}</h1>
+    <div>
+        <p>作者：{{ post.owner.username }}</p>
+        <p>分类：{{ post.category.name }}</p>
+        <p>标签：
+            {% for tag in tag_list %}
+                {{ tag.name }}
+            {% endfor %}
+        </p>
+    <p>pv:{{ post.pv }}</p>
+    <p>uv:{{ post.uv }}</p>
+    </div>
+    <p>
+        {% autoescape off %}
+        {{ post.content_html }}
+        {% endautoescape %}
+    </p>
+{% endif %}
+
+    <hr>
+        {% comment_block request.path %}
+    <hr>
+
+{% endblock %}

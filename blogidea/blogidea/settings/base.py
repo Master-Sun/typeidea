@@ -33,15 +33,23 @@ INSTALLED_APPS = [
     'blog',
     'comment',
     'config',
+    'xadmin',    # xadmin插件
+    'crispy_forms',
+    'dal',    # 自动补全插件
+    'dal_select2',
+    'ckeditor',    # 富文本编辑器
+    'ckeditor_uploader',    # 配置图片上传
+    'rest_framework',    # RESTful接口
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'django.contrib.staticfiles',    # 开发环境中提供静态资源的服务功能，生产环境中会由Nginx提供
 ]
 
 MIDDLEWARE = [
+    'blog.middleware.user_id.UserIDMiddleware',    # 添加在第一行，则后面的流程中request对象就多了一个uid属性
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -53,10 +61,13 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'blogidea.urls'
 
+
+THEME = 'default'    # 通过修改THEME启用不同的前端模板
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'themes', THEME, 'templates')],    # Django会首先去此目录查找模板，找不到时再去各APP下查找
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -110,3 +121,44 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'themes', THEME, 'static'),
+]
+
+
+# 设置xadmin的系统标题和底部展示信息
+XADMIN_TITLE = 'BlogType管理后台'
+XADMIN_FOOTER_TITLE = 'power by Master-Sun'
+
+
+# 配置ckeditor
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'height': 300,
+        'width': 800,
+        'tabSpaces': 4,
+        'extraPlugins': 'codesnippet',    # 配置代码插件
+    },
+}
+
+# 配置ckeditor图片上传路径和存放位置
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+CKEDITOR_UPLOAD_PATH = 'article_images'
+
+
+# 修改默认的存储引擎
+DEFAULT_FILE_STORAGE = 'blogidea.storage.WatermarkStorage'
+
+
+# 配置RESTful接口的分页
+REST_FRAMEWORK = {
+    # 其他分页选项
+    # rest_framework.pagination.PageNumberPagination：常用，当前是第几页，每页多少条数据
+    # rest_framework.pagination.CursorPagination：不能自己输入分页参数，防止用户填写任意页码和数据量来获取数据
+    # Cursor分页默认以created字段来排序，如果表中没有该字段，可通过继承CursorPagination自定义ordering属性为id或其他字段
+    # 这个是基于偏移量和limit的分页，即当前是第几条，还要获取多少条
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 2,
+}

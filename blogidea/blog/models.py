@@ -1,3 +1,4 @@
+import mistune
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -75,6 +76,7 @@ class Post(models.Model):
     desc = models.CharField(max_length=1024, blank=True, verbose_name="摘要")
     # help_text:后台管理中编辑页上的提示内容
     content = models.TextField(verbose_name="正文", help_text="正文必须为MarkDown格式")
+    content_html = models.TextField(verbose_name='正文html代码', blank=True, editable=False)
     # 字段类型：正整数或0；choices：显示为一个下拉选择框
     status = models.PositiveIntegerField(default=STATUS_NORMAL, choices=STATUS_ITEMS, verbose_name="状态")
     category = models.ForeignKey(Category, verbose_name="分类")
@@ -84,6 +86,17 @@ class Post(models.Model):
     created_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
     pv = models.PositiveIntegerField(default=1)
     uv = models.PositiveIntegerField(default=1)
+    # 新增字段，用来标注使用markdown还是富文本编辑器
+    is_md = models.BooleanField(default=False, verbose_name='markdown语法')
+
+    # 重写save方法，根据is_md的值切换存储格式
+    def save(self, *args, **kwargs):
+        if self.is_md:
+            self.content_html = mistune.markdown(self.content)
+        else:
+            # 如果是非markdown语法的，则直接保存content即可(ckeditor已做好转换)
+            self.content_html = self.content
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title

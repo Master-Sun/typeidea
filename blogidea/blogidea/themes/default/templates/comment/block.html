@@ -1,0 +1,34 @@
+<div class="comment">
+    <p>留言区</p>
+    <form action="/comment/" method="post" class="form-group">
+        {% csrf_token %}
+        <input type="hidden" name="target" value="{{ target }}">
+        {{ comment_form.as_p }}
+        <input type="submit" value="写好了">
+    </form>
+
+    <!-- 评论列表 -->
+    <p>留言板</p>
+    <ul class="list-group">
+        {% for comment in comment_list %}
+            <li class="list-group-item">
+                <div class="nickname">
+                    <a href="{{ comment.website }}">
+                        {% if comment.nickname %}
+                        {{ comment.nickname }}
+                        {% else %}
+                            暂无昵称
+                        {% endif %}
+                    </a>
+                    <span>{{ comment.created_time }}</span>
+                </div>
+                <div class="comment-content">
+                    <!-- 关闭django模板的自动转码功能 -->
+                    {% autoescape off %}
+                    {{ comment.content }}
+                    {% endautoescape %}
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
