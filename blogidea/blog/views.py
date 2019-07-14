@@ -105,9 +105,6 @@ class PostDetailView(CommonViewMixin, DetailView):
             Post.objects.filter(pk=post_id).update(uv=F('uv') + 1)
 
 
-
-
-
 # 列表页：ListView继承自View，实现get方法，可通过绑定模板来批量获取数据，提供分页功能
 class IndexView(CommonViewMixin, ListView):
     queryset = Post.latest_posts()    # 设置基础的数据集，和model属性二选一，比model多提供了过滤功能

@@ -112,9 +112,14 @@ class Post(models.Model):
     def hot_posts(cls):
         return cls.objects.filter(status=cls.STATUS_NORMAL).order_by('-pv')
 
+    # with_related：不用显示外键数据时传入False
     @classmethod
-    def latest_posts(cls):
-        return cls.objects.filter(status=Post.STATUS_NORMAL)
+    def latest_posts(cls, with_related=True):
+        queryset =  cls.objects.filter(status=Post.STATUS_NORMAL)
+        # 解决外键引起的N+1问题，查询时一并查出外键对应的数据
+        if with_related:
+            queryset.select_related("owner", 'category')
+        return queryset
 
     @staticmethod
     def get_by_tag(tag_id):
