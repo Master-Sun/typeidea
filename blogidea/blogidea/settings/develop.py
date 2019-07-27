@@ -13,13 +13,13 @@ DATABASES = {
 # 配置第三方性能优化插件：django-debug-toolbar
 # 该工具只能在开发和测试阶段使用，只有在DEBUG=True时才会生效
 # 因此添加在develop.py而不是base.py
-INSTALLED_APPS += [
-    'debug_toolbar',
-]
+# INSTALLED_APPS += [
+#     'debug_toolbar',
+# ]
 
-MIDDLEWARE += [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-]
+# MIDDLEWARE += [
+#     'debug_toolbar.middleware.DebugToolbarMiddleware',
+# ]
 
 INTERNAL_IPS = ['127.0.0.1',]
 

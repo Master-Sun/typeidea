@@ -51,8 +51,8 @@ urlpatterns = [
     url(r'author/(?P<author_id>\d+)/$', AuthorView.as_view(), name='author'),
     url(r'links/$', LinkListView.as_view(), name='links'),
     url(r'comment/$', CommentView.as_view(), name='comment'),
-    url(r'^super_admin/', admin.site.urls, name='super-admin'),    # 管理用户，使用jango自带的site
-    url(r'^admin/', xadmin.site.urls, name='xadmin'),         # 设置为xadmin站点
+    # url(r'^super_admin/', admin.site.urls, name='super-admin'),    # 管理用户，使用jango自带的site
+    # url(r'^admin/', xadmin.site.urls, name='xadmin'),         # 设置为xadmin站点
     url(r'^category-autocomplete/$', CategoryAutocomplete.as_view(), name='category-autocomplete'),
     url(r'^tag-autocomplete/$', TagAutocomplete.as_view(), name='tag-autocomplete'),
     # 提供上传图片和浏览图片的接口

@@ -1,5 +1,6 @@
 import mistune
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.db import models
 
 
@@ -110,7 +111,11 @@ class Post(models.Model):
     # 避免后期维护麻烦，因为后续业务需求的调整大多发生在View层
     @classmethod
     def hot_posts(cls):
-        return cls.objects.filter(status=cls.STATUS_NORMAL).order_by('-pv')
+        result = cache.get('hot_posts')
+        if not result:
+            result =  cls.objects.filter(status=cls.STATUS_NORMAL).order_by('-pv')
+            cache.set('hot_posts', result, 10*60)
+        return result
 
     # with_related：不用显示外键数据时传入False
     @classmethod
